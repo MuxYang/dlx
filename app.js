@@ -14,6 +14,7 @@ const COUNTER_HIT = `https://abacus.jasoncameron.dev/hit/${COUNTER_NAMESPACE}/${
 const trigger = document.getElementById("trigger");
 const centerImage = document.getElementById("centerImage");
 const clickCountEl = document.getElementById("clickCount");
+const overlayImage = document.getElementById("overlayImage");
 
 const activeAudios = new Set();
 
@@ -24,6 +25,13 @@ function pickRandomSound() {
 
 function updateImage() {
   centerImage.src = activeAudios.size > 0 ? IMG_ACTIVE : IMG_IDLE;
+
+  const hasSound3 = Array.from(activeAudios).some(audio => audio.isSound3);
+  if (hasSound3) {
+    overlayImage.classList.add("active");
+  } else {
+    overlayImage.classList.remove("active");
+  }
 }
 
 function setCountDisplay(value) {
@@ -57,8 +65,12 @@ async function incrementGlobalCount() {
 function playRandomSound() {
   incrementGlobalCount();
 
-  const src = pickRandomSound();
+  const isSound3 = Math.random() < 0.001;
+  const src = isSound3 ? "sounds/sound3.mp3" : pickRandomSound();
   const audio = new Audio(src);
+  if (isSound3) {
+    audio.isSound3 = true;
+  }
 
   activeAudios.add(audio);
   updateImage();
